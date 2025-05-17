@@ -28,4 +28,13 @@ public class UserServiceImpl implements UserService{
         return userRepository.save(newUser);
 
     }    
+    @Override
+    public Users getUserByUsername(String username){
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
+    @Override
+    public boolean checkPassword(String logoinRequestPassword, String userPassword){
+        return passwordEncoder.matches(logoinRequestPassword, userPassword);
+    }
 }
