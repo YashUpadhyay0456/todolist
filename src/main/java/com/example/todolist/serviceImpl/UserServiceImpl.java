@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.todolist.dto.UserDto;
 import com.example.todolist.entities.Users;
 import com.example.todolist.repository.UserRepository;
 import com.example.todolist.service.UserService;
@@ -19,18 +18,14 @@ public class UserServiceImpl implements UserService{
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
-    public String registerUser(UserDto registerationDto){
-        if(userRepository.existsByUsername(registerationDto.getUsername())){
-            return "User already exists";
+    public Users registerUser(Users newUser){
+        if(userRepository.existsByUsername(newUser.getUsername())){
+            return null;
         }
-        else{
-            Users user = new Users();
-            user.setName(registerationDto.getName());
-            user.setUsername(registerationDto.getUsername());
-            user.setPassword(passwordEncoder.encode(registerationDto.getPassword()));
-            userRepository.save(user);
-            return "User registered successfully";
-        }
+        String encodedPassword = passwordEncoder.encode(newUser.getPassword());
+        newUser.setPassword(encodedPassword);
+
+        return userRepository.save(newUser);
 
     }    
 }

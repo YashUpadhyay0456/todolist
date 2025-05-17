@@ -1,7 +1,7 @@
 package com.example.todolist.service;
 
-import com.example.todolist.dto.UserDto;
+import com.example.todolist.entities.Users;
 
 public interface UserService {
-    String registerUser(UserDto registerationDto);
+    Users registerUser(Users registerationDto);
 }
