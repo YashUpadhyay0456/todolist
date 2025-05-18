@@ -1,6 +1,8 @@
 package com.example.todolist.serviceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +38,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public boolean checkPassword(String logoinRequestPassword, String userPassword){
         return passwordEncoder.matches(logoinRequestPassword, userPassword);
+    }
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'loadUserByUsername'");
     }
 }

@@ -5,11 +5,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.todolist.config.JwtUtil;
 import com.example.todolist.entities.Users;
 import com.example.todolist.service.UserService;
 
@@ -23,6 +23,8 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> registerUser(@RequestBody Users newUser) {
@@ -55,21 +57,17 @@ public class AuthController {
         boolean passwordMatch = userService.checkPassword(loginRequest.getPassword(),existingUser.getPassword());
 
         if(!passwordMatch){
-            response.put("message", "Invalid credentials!");
-            response.put("name", null);
-            response.put("username", null);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        }
+        response.put("message", "Invalid credentials!");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+        String token = jwtUtil.generateToken(existingUser);
         response.put("message", "Login successful!");
+        response.put("token", token);
         response.put("name", existingUser.getName());
         response.put("username", existingUser.getUsername());
         return ResponseEntity. status(HttpStatus.OK).body(response);
 
     }
-    
-    
-    
-
 
 }
 
