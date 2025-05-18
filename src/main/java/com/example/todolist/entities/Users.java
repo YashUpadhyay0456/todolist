@@ -26,17 +26,54 @@ public class Users implements UserDetails {
     private String name;
     private String password;
 
+    // You can add a roles field if you want, for now we'll return empty authorities
+    // private Set<String> roles;
+
     public Users() {
     }
+
     public Users(String username, String name, String password) {
         this.username = username;
         this.name = name;
         this.password = password;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAuthorities'");
+        // If you have roles/authorities, convert them here.
+        // For now, return empty list (no roles).
+        return java.util.Collections.emptyList();
     }
-    
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    // You can add logic here if you want to support account locking, expiration, etc.
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
+

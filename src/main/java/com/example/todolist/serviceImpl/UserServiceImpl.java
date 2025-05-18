@@ -40,8 +40,7 @@ public class UserServiceImpl implements UserService{
         return passwordEncoder.matches(logoinRequestPassword, userPassword);
     }
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'loadUserByUsername'");
+    public Users loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username).orElse(null);
     }
 }
