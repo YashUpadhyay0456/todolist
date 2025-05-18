@@ -24,51 +24,54 @@ public class AuthController {
     @Autowired
     private UserService userService;
     @Autowired
-    JwtUtil jwtUtil;
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> registerUser(@RequestBody Users newUser) {
-        Map<String, Object> response = new HashMap<>();
-
         Users createdUser = userService.registerUser(newUser);
 
-        if(createdUser == null){
-            response.put("message", "Username already exists!");
-            response.put("name", null);
-            response.put("username", null);
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-        }else{
-            response.put("message", "User registered successfully!");
-            response.put("name", createdUser.getName());
-            response.put("username", createdUser.getUsername());
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        if (createdUser == null) {
+            return buildResponse(HttpStatus.CONFLICT, "Username already exists!", null, null);
+        } else {
+            return buildResponse(HttpStatus.OK, "User registered successfully!", createdUser, null);
         }
     }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody Users loginRequest) {
-        Map<String,Object> response = new HashMap<>();
         Users existingUser = userService.getUserByUsername(loginRequest.getUsername());
-        
-        if(existingUser == null){
-            response.put("message","User does not exists" );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+
+        if (existingUser == null) {
+            return buildResponse(HttpStatus.NOT_FOUND, "User does not exist", null, null);
         }
-        boolean passwordMatch = userService.checkPassword(loginRequest.getPassword(),existingUser.getPassword());
 
-        if(!passwordMatch){
-        response.put("message", "Invalid credentials!");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-    }
+        boolean passwordMatch = userService.checkPassword(loginRequest.getPassword(), existingUser.getPassword());
+
+        if (!passwordMatch) {
+            return buildResponse(HttpStatus.UNAUTHORIZED, "Invalid credentials!", null, null);
+        }
+
         String token = jwtUtil.generateToken(existingUser);
-        response.put("message", "Login successful!");
-        response.put("token", token);
-        response.put("name", existingUser.getName());
-        response.put("username", existingUser.getUsername());
-        return ResponseEntity. status(HttpStatus.OK).body(response);
-
+        return buildResponse(HttpStatus.OK, "Login successful!", existingUser, token);
     }
 
-}
+    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message, Users user, String token) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", message);
 
-    
+        if (user != null) {
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("name", user.getName());
+            userData.put("username", user.getUsername());
+            response.put("user", userData);
+        } else {
+            response.put("user", null);
+        }
+
+        if (token != null) {
+            response.put("token", token);
+        }
+
+        return ResponseEntity.status(status).body(response);
+    }
+}
