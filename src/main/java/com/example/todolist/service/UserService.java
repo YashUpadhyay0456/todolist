@@ -1,6 +1,5 @@
 package com.example.todolist.service;
 
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.example.todolist.entities.Users;

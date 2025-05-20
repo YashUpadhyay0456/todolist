@@ -1,5 +1,7 @@
 package com.example.todolist.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,8 @@ import com.example.todolist.entities.Tasks;
 import com.example.todolist.entities.Users;
 import com.example.todolist.service.TaskService;
 import com.example.todolist.service.UserService;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/tasks")
@@ -38,4 +42,17 @@ public class TaskController {
 
         return ResponseEntity.status(HttpStatus.OK).body(savedTask);
     }
+
+    @GetMapping("/myTasks")
+    public ResponseEntity<List<Tasks>> getMyTasks(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = userService.getUserByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        List<Tasks> userTasks = taskService.getTasksByUserId(user.getId()).orElse(java.util.Collections.emptyList());
+        return ResponseEntity.ok(userTasks);
+
+    }
+    
 }
