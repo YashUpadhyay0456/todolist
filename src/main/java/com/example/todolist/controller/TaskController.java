@@ -50,7 +50,7 @@ public class TaskController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        List<Tasks> userTasks = taskService.geTasksByUserId(user.getId());
+        List<Tasks> userTasks = taskService.getTasksByUserId(user.getId()).orElse(java.util.Collections.emptyList());
         return ResponseEntity.ok(userTasks);
 
     }
