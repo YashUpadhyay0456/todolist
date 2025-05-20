@@ -16,7 +16,6 @@ import com.example.todolist.entities.Users;
 import com.example.todolist.service.TaskService;
 import com.example.todolist.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -51,7 +50,7 @@ public class TaskController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        List<Tasks> userTasks = taskService.getTasksByUserId(user.getId());
+        List<Tasks> userTasks = taskService.geTasksByUserId(user.getId());
         return ResponseEntity.ok(userTasks);
 
     }

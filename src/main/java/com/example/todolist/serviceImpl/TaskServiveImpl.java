@@ -21,7 +21,7 @@ public class TaskServiveImpl implements TaskService {
     }
     @Override
     public List<Tasks> geTasksByUserId(Long userId){
-        return taskRepository.findById(userId);
+        return taskRepository.findByUserId(userId);
     }
     
 }
