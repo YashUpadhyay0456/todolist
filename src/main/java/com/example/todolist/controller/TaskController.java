@@ -1,6 +1,8 @@
 package com.example.todolist.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,19 +64,23 @@ public class TaskController {
     public ResponseEntity<?> toggleTaskCompletion(@PathVariable Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = userService.getUserByUsername(username);
+        Map<String, Object> response = new HashMap<>();
 
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+            response.put("message", "User not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
         try {
             Optional<Tasks> updatedTask = taskService.toggleTaskCompletion(id, user.getId());
             if (updatedTask.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
+                response.put("message", "Task not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
             return ResponseEntity.ok(updatedTask.get());
         } catch (java.nio.file.AccessDeniedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: " + e.getMessage());
+            response.put("message", "Access denied: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
