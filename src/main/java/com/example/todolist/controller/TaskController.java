@@ -1,6 +1,7 @@
 package com.example.todolist.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,9 +58,8 @@ public class TaskController {
 
     }
 
-    @PatchMapping("/toggle{id}")
+    @PatchMapping("/toggle/{id}")
     public ResponseEntity<?> toggleTaskCompletion(@PathVariable Long id) {
-        System.out.println("Toggle task completion for task ID: " + id);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = userService.getUserByUsername(username);
 
@@ -68,8 +68,13 @@ public class TaskController {
         }
 
         try {
-            Tasks updatedTask = taskService.toggleTaskCompletion(id, user.getId());
-            return ResponseEntity.ok(updatedTask);
+            Optional<Tasks> updatedTask = taskService.toggleTaskCompletion(id, user.getId());
+            if (updatedTask.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
+            }
+            return ResponseEntity.ok(updatedTask.get());
+        } catch (java.nio.file.AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: " + e.getMessage());
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
