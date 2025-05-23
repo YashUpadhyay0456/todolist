@@ -9,4 +9,5 @@ public interface TaskService {
 
     public Tasks createTask(Tasks tasks);
     Optional<List<Tasks>> getTasksByUserId(Long userId);
+    Tasks toggleTaskCompletion(Long taskId, Long userId);
 }

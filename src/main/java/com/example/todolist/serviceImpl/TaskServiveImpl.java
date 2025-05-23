@@ -25,4 +25,17 @@ public class TaskServiveImpl implements TaskService {
         return Optional.ofNullable(taskRepository.findByUserId(userId));
     }
     
+    @Override
+    public Tasks toggleTaskCompletion(Long taskId, Long userId) {
+        Tasks task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (!task.getUserId().equals(userId)) {
+            throw new RuntimeException("You are not authorized to update this task");
+        }
+
+        task.setCompleted(!task.isCompleted());
+        return taskRepository.save(task);
+    }
+    
 }

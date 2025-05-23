@@ -16,6 +16,8 @@ import com.example.todolist.entities.Users;
 import com.example.todolist.service.TaskService;
 import com.example.todolist.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
@@ -54,5 +56,22 @@ public class TaskController {
         return ResponseEntity.ok(userTasks);
 
     }
-    
+
+    @PatchMapping("/toggle{id}")
+    public ResponseEntity<?> toggleTaskCompletion(@PathVariable Long id) {
+        System.out.println("Toggle task completion for task ID: " + id);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = userService.getUserByUsername(username);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        try {
+            Tasks updatedTask = taskService.toggleTaskCompletion(id, user.getId());
+            return ResponseEntity.ok(updatedTask);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+    }
 }
