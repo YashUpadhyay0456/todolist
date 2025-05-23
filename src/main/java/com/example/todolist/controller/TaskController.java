@@ -1,6 +1,9 @@
 package com.example.todolist.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +19,8 @@ import com.example.todolist.entities.Users;
 import com.example.todolist.service.TaskService;
 import com.example.todolist.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
@@ -54,5 +59,30 @@ public class TaskController {
         return ResponseEntity.ok(userTasks);
 
     }
-    
+
+    @PatchMapping("/toggle/{id}")
+    public ResponseEntity<?> toggleTaskCompletion(@PathVariable Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = userService.getUserByUsername(username);
+        Map<String, Object> response = new HashMap<>();
+
+        if (user == null) {
+            response.put("message", "User not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        try {
+            Optional<Tasks> updatedTask = taskService.toggleTaskCompletion(id, user.getId());
+            if (updatedTask.isEmpty()) {
+                response.put("message", "Task not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(updatedTask.get());
+        } catch (java.nio.file.AccessDeniedException e) {
+            response.put("message", "Access denied: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+    }
 }

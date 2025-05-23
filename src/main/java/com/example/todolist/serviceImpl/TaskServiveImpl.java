@@ -1,5 +1,6 @@
 package com.example.todolist.serviceImpl;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,24 @@ public class TaskServiveImpl implements TaskService {
     @Override
     public Optional<List<Tasks>> getTasksByUserId(Long userId){
         return Optional.ofNullable(taskRepository.findByUserId(userId));
+    }
+    
+    @Override
+    public Optional<Tasks> toggleTaskCompletion(Long taskId, Long userId) throws AccessDeniedException {
+        Optional<Tasks> taskOptional = taskRepository.findById(taskId);
+        if (taskOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Tasks task = taskOptional.get();
+
+        if (!task.getUserId().equals(userId)) {
+            throw new AccessDeniedException("You are not authorised to modify this task.");
+        }
+
+        task.setCompleted(!task.isCompleted());
+        taskRepository.save(task);
+        return Optional.of(task);
     }
     
 }
