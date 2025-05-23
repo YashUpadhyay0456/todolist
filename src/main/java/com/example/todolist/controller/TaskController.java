@@ -77,7 +77,7 @@ public class TaskController {
                 response.put("message", "Task not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
-            return ResponseEntity.ok(updatedTask.get());
+            return ResponseEntity.status(HttpStatus.OK).body(updatedTask.get());
         } catch (java.nio.file.AccessDeniedException e) {
             response.put("message", "Access denied: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
