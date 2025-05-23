@@ -11,4 +11,5 @@ public interface TaskService {
     public Tasks createTask(Tasks tasks);
     Optional<List<Tasks>> getTasksByUserId(Long userId);
     Optional<Tasks> toggleTaskCompletion(Long taskId, Long userId) throws AccessDeniedException;
+    boolean deleteTask(Long taskId, Long userId) throws AccessDeniedException;
 }

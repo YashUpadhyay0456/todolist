@@ -43,5 +43,22 @@ public class TaskServiveImpl implements TaskService {
         taskRepository.save(task);
         return Optional.of(task);
     }
+
+    @Override
+    public boolean deleteTask(Long taskId, Long userId) throws AccessDeniedException {
+        Optional<Tasks> taskOptional = taskRepository.findById(taskId);
+        if (taskOptional.isEmpty()) {
+            return false;
+        }
+
+        Tasks task = taskOptional.get();
+
+        if (!task.getUserId().equals(userId)) {
+            throw new AccessDeniedException("You are not authorised to delete this task.");
+        }
+
+        taskRepository.delete(task);
+        return true;
+    }
     
 }

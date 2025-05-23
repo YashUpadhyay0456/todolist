@@ -18,6 +18,8 @@ import com.example.todolist.entities.Tasks;
 import com.example.todolist.entities.Users;
 import com.example.todolist.service.TaskService;
 import com.example.todolist.service.UserService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,4 +87,31 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteTask(@PathVariable Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = userService.getUserByUsername(username);
+        Map<String, Object> response = new HashMap<>();
+
+        if (user == null) {
+            response.put("message", "User not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        try {
+            boolean taskDeleted = taskService.deleteTask(id, user.getId());
+            if(!taskDeleted) {
+                response.put("message", "Task not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            response.put("message", "Task deleted successfully");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (java.nio.file.AccessDeniedException e) {
+            response.put("message", "Access denied: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+    }   
 }
