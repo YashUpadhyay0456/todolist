@@ -119,15 +119,6 @@ spring.datasource.password=your_db_password
 
 ---
 
-## ✅ TODOs
-
-- [ ] Add Swagger/OpenAPI documentation
-- [ ] Unit and integration tests
-- [ ] Role-based access for Admin
-- [ ] Dockerize the application
-
----
-
 ## 📄 License
 
 This project is licensed under the MIT License.
